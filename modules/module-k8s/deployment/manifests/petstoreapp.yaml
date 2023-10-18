@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name:  ns-petstore
+  labels:
+    name: ns-petstore
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petstoreapp
+  namespace: ns-petstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: petstoreapp
+  template:
+    metadata:
+      labels:
+        app: petstoreapp
+    spec:
+      containers:
+      - name: petstoreapp
+        image: petstoreapp
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PETSTOREAPP_SERVER_PORT
+          value: "80"
+        - name: PETSTOREPRODUCTSERVICE_URL
+          value: http://petstoreproduct-service
+        - name: PETSTOREPETSERVICE_URL
+          value: http://petstorepet-service
+        - name: PETSTOREORDERSERVICE_URL
+          value: http://petstoreorder-service
+        resources:
+          requests:
+              cpu: 250m
+              memory: 500Mi
+          limits:
+            memory: "900Mi"
+            cpu: "700m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        ports:
+        - containerPort: 80
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  petstoreapp-service
+  namespace: ns-petstore
+spec:
+  selector:
+    app: petstoreapp
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP

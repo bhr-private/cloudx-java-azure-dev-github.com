@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name:  ns-petstore
+  labels:
+    name: ns-petstore
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petstoreproduct
+  namespace: ns-petstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: petstoreproduct
+  template:
+    metadata:
+      labels:
+        app: petstoreproduct
+    spec:
+      containers:
+      - name: petstoreproduct
+        image: contregpetstore.azurecr.io/petstoreproductservice
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PETSTOREPRODUCTSERVICE_SERVER_PORT
+          value: "80"
+        resources:
+          requests:
+              cpu: 250m
+              memory: 500Mi
+          limits:
+            memory: "900Mi"
+            cpu: "700m"
+        readinessProbe:
+          httpGet:
+            path: /petstoreproductservice/v2/product/info
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        ports:
+        - containerPort: 80
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  petstoreproduct-service
+  namespace: ns-petstore
+spec:
+  selector:
+    app: petstoreproduct
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP

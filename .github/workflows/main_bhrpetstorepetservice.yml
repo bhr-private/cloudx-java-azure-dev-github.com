@@ -31,7 +31,8 @@ jobs:
       with:
         push: true
         tags: contregbhrpetstore.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fa4417de463b4a078c86fdd25a828795 }}/petstorepetservice:${{ github.sha }}
-        file: ./Dockerfile
+        file: ./petstore/petstorepetservice/Dockerfile
+        
 
   deploy:
     runs-on: ubuntu-latest

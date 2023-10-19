@@ -22,8 +22,8 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Update the version.json
-      run: echo -n -e "{\"version\":\"${{ github.sha }}\",\"date\":\"$(date '+%m-%d-%Y %H:%M:%S')\"}" > petstore/petstoreapp/src/main/resources/static/content/version.json
-    - run: cat petstore/petstoreapp/src/main/resources/static/content/version.json
+      run: echo -n -e "{\"version\":\"${{ github.sha }}\",\"date\":\"$(date '+%m-%d-%Y %H:%M:%S')\"}" > petstore/petstoreapp/src/main/resources/version.json
+    - run: cat petstore/petstoreapp/src/main/resources/version.json
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
